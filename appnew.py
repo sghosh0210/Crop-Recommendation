@@ -5,6 +5,7 @@ import pandas as pd
 
 def model():
     return joblib.load('Crop_recommendation.pkl')
+model = joblib.load('Crop_recommendation.pkl')
 st.title('🌾Crop Recommendation Project using ML🌾')
 
 st.write("Enter soil and environmental conditions:")
