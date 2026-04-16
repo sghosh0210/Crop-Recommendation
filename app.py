@@ -38,13 +38,13 @@ if st.button("🌱 Predict Crop"):
     }
 
     df = pd.DataFrame([input_dict])
-    prediction = final_model.predict(df)
+    prediction = model.predict(df)
 
     st.success(f"✅ Recommended Crop: {prediction[0]}")
 
     # Confidence score
     try:
-        prob = final_model.predict_proba(df)
+        prob = model.predict_proba(df)
         confidence = np.max(prob)
         st.info(f"Confidence: {confidence:.2f}")
     except:
@@ -54,7 +54,7 @@ if st.button("🌱 Predict Crop"):
 
 if st.checkbox("Show Feature Importance"):
     try:
-        importance = final_model.feature_importances_
+        importance = model.feature_importances_
         features = df.columns
 
         imp_df = pd.DataFrame({
