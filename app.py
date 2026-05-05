@@ -1,69 +1,26 @@
 import streamlit as st
+import pickle
 import numpy as np
-import joblib
-import pandas as pd
-st.title('🌾Crop Recommendation Project using ML🌾')
 
-st.write("Enter soil and environmental conditions:")
+# Load your trained model
+model = pickle.load(open("Crop_recommendation (4).pkl", "rb"))
 
-col1, col2 = st.columns(2)
+st.title("🌱 Crop Recommendation System")
 
-with col1:
-    n = st.number_input("Nitrogen (N)", 0.0)
-    p = st.number_input("Phosphorus (P)", 0.0)
-    k = st.number_input("Potassium (K)", 0.0)
-    temp = st.number_input("Temperature (°C)", 0.0)
+st.write("Enter soil and environmental conditions to get the best crop recommendation.")
 
-with col2:
-    humidity = st.number_input("Humidity (%)", 0.0)
-    ph = st.number_input("pH", 0.0)
-    rainfall = st.number_input("Rainfall (mm)", 0.0)
+# Input fields
+N = st.number_input("Nitrogen (N)", min_value=0)
+P = st.number_input("Phosphorus (P)", min_value=0)
+K = st.number_input("Potassium (K)", min_value=0)
+temperature = st.number_input("Temperature (°C)")
+humidity = st.number_input("Humidity (%)")
+ph = st.number_input("pH value")
+rainfall = st.number_input("Rainfall (mm)")
 
-# Optional state input
-state = st.text_input("State (optional)")
+# Prediction button
+if st.button("Recommend Crop"):
+    input_data = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
+    prediction = model.predict(input_data)
 
-# -----------------------------
-# Prediction
-# -----------------------------
-if st.button("🌱 Predict Crop"):
-   # Base features
-    input_dict = {
-        'N': n,
-        'P': p,
-        'K': k,
-        'temperature': temp,
-        'humidity': humidity,
-        'ph': ph,
-        'rainfall': rainfall
-    }
-
-    df = pd.DataFrame([input_dict])
-    prediction = model.predict(df)
-
-    st.success(f"✅ Recommended Crop: {prediction[0]}")
-
-    # Confidence score
-    try:
-        prob = model.predict_proba(df)
-        confidence = np.max(prob)
-        st.info(f"Confidence: {confidence:.2f}")
-    except:
-        pass
-
-        st.markdown("---")
-
-if st.checkbox("Show Feature Importance"):
-    try:
-        importance = model.feature_importances_
-        features = df.columns
-
-        imp_df = pd.DataFrame({
-            "Feature": features,
-            "Importance": importance
-        }).sort_values(by="Importance", ascending=False)
-
-        st.bar_chart(imp_df.set_index("Feature"))
-    except:
-        st.warning("Feature importance not available.")
-st.markdown("---")
-st.caption("Built with Streamlit 🚀")
+    st.success(f"🌾 Recommended Crop: {prediction[0]}")
